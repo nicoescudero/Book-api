@@ -5,14 +5,12 @@ const { User } = require('../configuration/database');
 
 route.get('/', async (req, res) => {
     const usuario = await User.findAll()
-    const resultado = JSON.stringify(usuario);
-    console.log(resultado);
+    console.log(usuario);
+    res.json(usuario);
 });
 
+route.post('/', (req, res) => {
+    const newUser = User.create(req.body);
+    res.json(newUser);
+})
 module.exports = route;
-
-/*
-
-
-
-*/
