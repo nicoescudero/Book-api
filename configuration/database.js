@@ -13,7 +13,7 @@ function init() {
 
 const User = userModel(sequelizeConexion, Sequelize);
 
-sequelizeConexion.sync({ force: true })
+sequelizeConexion.sync({ alter: true })
     .then(() => console.log('Syncronized'))
 
 module.exports = { User };
