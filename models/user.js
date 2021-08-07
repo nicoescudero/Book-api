@@ -1,10 +1,12 @@
 module.exports = (sequelize, type) => {
     return sequelize.define('user', {
-        dni: {
+        id: {
             primaryKey: true,
-            type: type.INTEGER
+            type: type.INTEGER,
+            autoIncrement: true
         },
-        nombre: type.STRING,
-        apellido: type.STRING
+        userName: type.STRING,
+        email: type.STRING,
+        password: type.STRING
     })
 };

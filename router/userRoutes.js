@@ -9,7 +9,7 @@ route.get('/', async (req, res) => {
 });
 
 route.get('/:userId', async (req, res) => {
-    const u = await User.findOne({ where: { dni: req.params.userId } });
+    const u = await User.findOne({ where: { id: req.params.userId } });
     res.json({ Succes: u });
 })
 
@@ -20,13 +20,13 @@ route.post('/', (req, res) => {
 
 route.put('/:userId', async (req, res) => {
     await User.update(req.body, {
-        where: { dni: req.params.userId }
+        where: { id: req.params.userId }
     })
     res.json({ Succes: 'Updated' });
 })
 
 route.delete('/:userId', async (req, res) => {
-    await User.destroy({ where: { dni: req.params.userId } });
+    await User.destroy({ where: { id: req.params.userId } });
     res.json({ Succes: 'deleted' });
 })
 
