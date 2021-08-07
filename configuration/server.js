@@ -10,5 +10,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 //routes
 app.use('/user', require('../router/routes'));
+app.use('/book', require('../router/bookRoutes'));
 app.get('/', (req, res) => res.send('Hola!'));
+
+
 module.exports = app;
