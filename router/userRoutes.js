@@ -1,7 +1,7 @@
-const { Router } = require('express');
-const route = Router();
+const route = require('express').Router();
 const { User } = require('../configuration/database');
-
+const bcrypt = require('bcryptjs');
+const { check, validationResult } = require('express-validator');
 
 route.get('/', async (req, res) => {
     const usuario = await User.findAll()
@@ -13,7 +13,18 @@ route.get('/:userId', async (req, res) => {
     res.json({ Succes: u });
 })
 
-route.post('/', (req, res) => {
+route.post('/', [
+    check('userName', ' You userName is required').notEmpty(),
+    check('email', 'Email address is required').isEmail(),
+    check('password', 'Password is required').notEmpty(),
+    check('password', '').isLength({ min: 5 })
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() })
+    }
+
+    req.body.password = await bcrypt.hashSync(req.body.password, 10);
     const newUser = User.create(req.body);
     res.json(newUser);
 })
