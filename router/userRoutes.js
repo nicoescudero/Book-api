@@ -2,6 +2,8 @@ const route = require('express').Router();
 const { User } = require('../configuration/database');
 const bcrypt = require('bcryptjs');
 const { check, validationResult } = require('express-validator');
+const jwt = require('jwt-simple');
+const moment = require('moment');
 
 route.get('/', async (req, res) => {
     const usuario = await User.findAll()
@@ -29,6 +31,18 @@ route.post('/', [
     res.json(newUser);
 })
 
+route.post('/login', async (req, res) => {
+    const user = await User.findOne({ where: { email: req.body.email } })
+    if (user) {
+        const descrypted = bcrypt.compareSync(req.body.password, user.password);
+        if (descrypted)
+            res.json({ token: generateToken(user) });
+        else
+            res.json({ error: 'The password entered is not valid' })
+    } else
+        res.json({ error: 'The e-mail entered is not valid' })
+})
+
 route.put('/:userId', async (req, res) => {
     await User.update(req.body, {
         where: { id: req.params.userId }
@@ -40,5 +54,16 @@ route.delete('/:userId', async (req, res) => {
     await User.destroy({ where: { id: req.params.userId } });
     res.json({ Succes: 'deleted' });
 })
+
+
+//token
+const generateToken = (user) => {
+    const data = {
+        userID: user.id,
+        createdAt: moment().unix(),
+        expiredAt: moment().add(5, 'minutes').unix()
+    }
+    return jwt.encode(data, process.env.KEY);
+}
 
 module.exports = route;

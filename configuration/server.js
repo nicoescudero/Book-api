@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
+const middleware = require('../router/middleware');
 require('dotenv').config();
+
 //set configuration
 app.set('port', process.env.PORT || 4000);
 //middleware
@@ -10,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 //routes
 app.use('/user', require('../router/userRoutes'));
-app.use('/book', require('../router/bookRoutes'));
+app.use('/book', middleware.checkToken, require('../router/bookRoutes'));
 app.get('/', (req, res) => res.send('Hola!'));
 
 
