@@ -5,6 +5,43 @@ const { check, validationResult } = require('express-validator');
 const jwt = require('jwt-simple');
 const moment = require('moment');
 
+/**
+ * components:
+ *   schemas:
+ *      User:
+ *          type: object
+ *          properties:
+ *              id:
+ *                type: integer
+ *                description: id generated automatically
+ *              username:
+ *                type: string
+ *                description: nickname of user
+ *              email:
+ *                type: string
+ *                description: email of user
+ *              password:
+ *                type:string
+ *                description: password of user
+ *          example:
+ *              id: 1
+ *              userName: frank48
+ *              email: frankCastle1990@example.com
+ *              password: $2a$10$YoIyUHeciH67iIf/lewjXOHVmOSAEMbywYSOYMM2nrxbqMEWCUf2C
+ */
+
+/**
+ * @swagger
+ * /user/:
+ *  get:
+ *      summary: Return a user list
+ *      responses:
+ *          200:
+ *              description: user list
+ *              content:
+ *                  application/json
+ *              
+ * */
 route.get('/', async (req, res) => {
     const usuario = await User.findAll()
     res.json(usuario);
