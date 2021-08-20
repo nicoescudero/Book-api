@@ -5,7 +5,6 @@ const middleware = require('../router/middleware');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const { options } = require('../configuration/swaggerOptions');
-const swaggerJSDoc = require('swagger-jsdoc');
 require('dotenv').config();
 
 //set configuration
