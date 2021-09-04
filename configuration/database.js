@@ -14,6 +14,6 @@ function init() {
 const User = userModel(sequelizeConexion, Sequelize);
 const Book = bookModel(sequelizeConexion, Sequelize);
 sequelizeConexion.sync({ alter: true })
-    .then(() => console.log('Syncronized'))
+    .then(() => console.log('Database Syncronized'))
 
 module.exports = { User, Book };

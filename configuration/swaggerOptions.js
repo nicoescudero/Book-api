@@ -8,7 +8,7 @@ const options = {
         },
         servers: [{ url: 'http://localhost:4000' }]
     },
-    apis: ['./router/*.js']
+    apis: ['./docs/*.js']
 };
 
 module.exports = { options };
