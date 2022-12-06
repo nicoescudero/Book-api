@@ -1,12 +1,12 @@
 const routes = require('express').Router();
-const middleware = require('./middleware');
+const { generateToken } = require('../helpers/token');
 const { get, getById, login, register, put, destroy } = require('../controllers/user.controller');
 
 routes.get('/', get);
-routes.get('/:userId', getById);
+routes.get('/:userId', generateToken, getById);
 routes.post('/', register);
 routes.post('/login', login);
-routes.put('/:userId',middleware.checkToken, put);
-routes.delete('/:userId',middleware.checkToken, destroy);
+routes.put('/:userId', generateToken, put);
+routes.delete('/:userId', generateToken, destroy);
 
 module.exports = routes;

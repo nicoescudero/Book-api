@@ -1,7 +1,6 @@
-const { User } = require('../database/models');
 const bcrypt = require('bcryptjs');
-const jwt = require('jwt-simple');
-const moment = require('moment');
+const { User } = require('../database/models');
+const { generateToken } = require('../helpers/token');
 
 exports.getUser = async () => {
     const users = await User.findAll();
@@ -16,7 +15,8 @@ exports.getUserById = async (id) => {
 exports.postLogin = async (req) => {
   const user = await User.findOne({ where: { email: req.body.email } });
   const descrypted = bcrypt.compareSync(req.body.password, user.password);
-  return await generateToken(user);
+  if(descrypted) return await generateToken(user);
+  return { message: 'Invalid password' };
 };
 
 exports.postRegister = async (req) => {
@@ -38,13 +38,4 @@ exports.deleteUser = async (req) => {
   const usuario = await User.findOne({ where: { id: req.params.userId } });
   usuario.destroy();
   return ;
-};
-
-const generateToken = (user) => {
-  const data = {
-      userID: user.id,
-      createdAt: moment().unix(),
-      expiredAt: moment().add(5, 'minutes').unix()
-  }
-  return jwt.encode(data, process.env.KEY);
 };
