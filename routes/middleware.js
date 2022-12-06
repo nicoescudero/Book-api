@@ -8,7 +8,7 @@ const checkToken = async (req, res, next) => {
     if (token === null)
         return res.status(401).json({ message: 'Need a token' });
     try {
-        userToken = jwt.decode(token, process.env.KEY);
+        userToken = await jwt.decode(token, process.env.KEY);
     } catch (error) {
         return res.status(401).json({ message: 'The token is invalid' })
     }

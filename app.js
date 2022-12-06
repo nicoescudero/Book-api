@@ -1,6 +1,13 @@
-const app = require('./configuration/server');
-//connection to database
-require('./configuration/database');
+const express = require('express');
+const app = express();
+const morgan = require('morgan');
 
-//start server
-app.listen(app.get('port'), () => console.log(`server on port ${app.get('port')}`));
+require('dotenv').config();
+
+app.use(morgan('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+//routes
+app.use('/', require('./routes/index.routes'));
+
+module.exports= app;

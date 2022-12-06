@@ -1,15 +1,15 @@
 {
   "name": "apimysql",
   "version": "1.0.0",
-  "description": "API REST de libros",
+  "description": "BOOK API",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app",
-    "start": "node app"
+    "dev": "nodemon ./bin/www",
+    "start": "node ./bin/www"
   },
   "keywords": [],
-  "author": "",
+  "author": "@nicoescudero",
   "license": "ISC",
   "devDependencies": {
     "jest": "^27.0.6",
@@ -21,6 +21,7 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-validator": "^6.12.1",
+    "http-errors": "^2.0.0",
     "jwt-simple": "^0.5.6",
     "moment": "^2.29.1",
     "mysql2": "^2.2.5",
