@@ -2,7 +2,7 @@
  * @swagger
  *  components:
  *      schemas:
- *          User: 
+ *          User:
  *              type: object
  *              required:
  *                  - userName
@@ -26,7 +26,7 @@
  *                  userName: User10
  *                  email: user@example.com
  *                  password: $2a$10$YoIyUHeciH67iIf/lewjXOHVmOSAEMbywYSOYMM2nrxbqMEWCUf2C
- *          
+ *
  *          UserRequirements:
  *                      type: object
  *                      properties:
@@ -40,7 +40,7 @@
  *                          userName: user1
  *                          email: user@example.com
  *                          password: YourPassword
- * 
+ *
  *      parameters:
  *          userId:
  *              in: path
@@ -124,13 +124,13 @@
  *  post:
  *      summary: Adds new user
  *      tags: [User]
- *      requestBody: 
+ *      requestBody:
  *          required: true
  *          content:
  *              application/json:
  *                  schema:
  *                      $ref: "#components/schemas/UserRequirements"
- *      responses: 
+ *      responses:
  *              201:
  *                  description: User Created
  *                  content:
@@ -207,7 +207,7 @@
  *            $ref: "#components/responses/UserNotFound"
  *          422:
  *            $ref: "#components/responses/InvalidForm"
- * 
+ *
  */
 
 /**

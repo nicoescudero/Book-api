@@ -1,0 +1,20 @@
+# Packages
+./node_modules
+
+# bin
+./bin
+# Views (EJS)
+./views
+
+# Public (images/js/stylesheets)
+./public
+
+# JSON
+./package-lock.json
+./package.json
+
+# eslint
+.eslintrc.js
+
+# Database
+database

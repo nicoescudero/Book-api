@@ -68,7 +68,7 @@
  *    description: Unauthorized Error
  *    content:
  *     application/json:
- *        example:    
+ *        example:
  *         message: Token not provided
  * tags:
  *  name: Book
@@ -129,7 +129,6 @@
  *    404:
  *      $ref: "#components/responses/BookNotFound"
  */
-
 
 /**
  * @swagger
@@ -234,4 +233,3 @@
  *    404:
  *      $ref: "#components/responses/BookNotFound"
  */
-

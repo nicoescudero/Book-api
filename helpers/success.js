@@ -8,9 +8,9 @@ const endpointResponse = ({
     body,
     options,
     token,
-  })
-}
+  });
+};
 
 module.exports = {
   endpointResponse,
-}
+};

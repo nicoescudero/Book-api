@@ -1,10 +1,12 @@
-const createHttpError = require('http-errors')
-const { endpointResponse } = require('../helpers/success')
-const { catchAsync } = require('../helpers/catchAsync')
-const { getUser, getUserById, postLogin, postRegister, putUser, deleteUser } = require('../services/user.service');
+const createHttpError = require('http-errors');
+const { endpointResponse } = require('../helpers/success');
+const { catchAsync } = require('../helpers/catchAsync');
+const {
+  getUser, getUserById, postLogin, postRegister, putUser, deleteUser,
+} = require('../services/user.service');
 
 module.exports = {
-  get: catchAsync(async (req,res,next) => {
+  get: catchAsync(async (req, res, next) => {
     try {
       const response = await getUser();
       endpointResponse({
@@ -21,7 +23,7 @@ module.exports = {
       next(httpError);
     }
   }),
-  getById: catchAsync(async (req,res,next) => {
+  getById: catchAsync(async (req, res, next) => {
     try {
       const response = await getUserById(req.params.id);
       endpointResponse({
@@ -38,7 +40,7 @@ module.exports = {
       next(httpError);
     }
   }),
-  login: catchAsync(async (req,res,next) => {
+  login: catchAsync(async (req, res, next) => {
     try {
       const response = await postLogin(req);
       endpointResponse({
@@ -55,7 +57,7 @@ module.exports = {
       next(httpError);
     }
   }),
-  register: catchAsync(async (req,res,next) => {
+  register: catchAsync(async (req, res, next) => {
     try {
       const response = await postRegister(req);
       endpointResponse({
@@ -72,7 +74,7 @@ module.exports = {
       next(httpError);
     }
   }),
-  put: catchAsync(async (req,res,next) => {
+  put: catchAsync(async (req, res, next) => {
     try {
       const response = await putUser(req);
       endpointResponse({
@@ -89,7 +91,7 @@ module.exports = {
       next(httpError);
     }
   }),
-  destroy: catchAsync(async (req,res,next) => {
+  destroy: catchAsync(async (req, res, next) => {
     try {
       const response = await deleteUser(req);
       endpointResponse({

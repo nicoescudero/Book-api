@@ -22,4 +22,4 @@ exports.configSwagger = {
     ],
   },
   apis: ['./docs/*.js'],
-}
+};

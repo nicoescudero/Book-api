@@ -9,37 +9,37 @@ exports.getBooks = async (res) => {
   }
 };
 
-exports.getBookById = async (id,res) => {
+exports.getBookById = async (id, res) => {
   try {
-    const book = await Book.findOne({ where: { id: id } });
+    const book = await Book.findOne({ where: { id } });
     return book;
   } catch (error) {
-    return res.status(404).json({ message: 'Book not found'});
+    return res.status(404).json({ message: 'Book not found' });
   }
 };
 
-exports.getBookByName = async (name,res) => {
+exports.getBookByName = async (name, res) => {
   try {
-    const book = await Book.findOne({ where: { name: name } });
+    const book = await Book.findOne({ where: { name } });
     return book;
   } catch (error) {
-    return res.status(404).json({ message: 'Book not found'});
+    return res.status(404).json({ message: 'Book not found' });
   }
 };
 
-exports.getBookByAuthor = async (author,res) => {
+exports.getBookByAuthor = async (author, res) => {
   try {
-    const books = await Book.findAll({ where: { author: author } });
-    if(books) return books;
+    const books = await Book.findAll({ where: { author } });
+    return books;
   } catch (error) {
-    res.status(404).json({ message: 'Not found author' });
+    return res.status(404).json({ message: 'Not found author' });
   }
 };
 
 exports.postBook = async (req, res) => {
   try {
     const { name, author } = req.body;
-    const book = await Book.create({ name: name, author: author });
+    const book = await Book.create({ name, author });
     return book;
   } catch (error) {
     return res.status(400);
@@ -49,16 +49,16 @@ exports.postBook = async (req, res) => {
 exports.putBook = async (req, res) => {
   try {
     const { name, author } = req.body;
-    const book = await Book.update({name: name, author: author}, { where: { id: req.params.id } });
+    const book = await Book.update({ name, author }, { where: { id: req.params.id } });
     return book;
   } catch (error) {
-    return res.status(404).json({ message: 'Book not found'})
+    return res.status(404).json({ message: 'Book not found' });
   }
 };
 
 exports.deleteBook = async (id, res) => {
   try {
-    await Book.destroy({ where: { id: id } });
+    await Book.destroy({ where: { id } });
     return res.status(204);
   } catch (error) {
     return res.status(404).json({ message: 'Book not found' });

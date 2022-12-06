@@ -1,10 +1,12 @@
-const createHttpError = require('http-errors')
-const { endpointResponse } = require('../helpers/success')
-const { catchAsync } = require('../helpers/catchAsync')
-const { getBooks, getBookById, getBookByName, getBookByAuthor, postBook, putBook, deleteBook } = require('../services/book.service');
+const createHttpError = require('http-errors');
+const { endpointResponse } = require('../helpers/success');
+const { catchAsync } = require('../helpers/catchAsync');
+const {
+  getBooks, getBookById, getBookByName, getBookByAuthor, postBook, putBook, deleteBook,
+} = require('../services/book.service');
 
 module.exports = {
-  get: catchAsync(async (req,res,next) => {
+  get: catchAsync(async (req, res, next) => {
     try {
       const response = await getBooks();
       endpointResponse({
@@ -21,7 +23,7 @@ module.exports = {
       next(httpError);
     }
   }),
-  getById: catchAsync(async (req,res,next) => {
+  getById: catchAsync(async (req, res, next) => {
     try {
       const response = await getBookById(req.params.id);
       endpointResponse({
@@ -55,7 +57,7 @@ module.exports = {
       next(httpError);
     }
   }),
-  getByAuthor: catchAsync(async (req,res,next) => {
+  getByAuthor: catchAsync(async (req, res, next) => {
     try {
       const response = await getBookByAuthor(req.params.author);
       endpointResponse({
@@ -63,7 +65,7 @@ module.exports = {
         res,
         message: 'Get Book Succesfuly',
         body: response,
-      });  
+      });
     } catch (error) {
       const httpError = createHttpError(
         error.statusCode,
@@ -72,9 +74,9 @@ module.exports = {
       next(httpError);
     }
   }),
-  post: catchAsync(async (req,res,next) => {
+  post: catchAsync(async (req, res, next) => {
     try {
-      const response = await postBook(req,res);
+      const response = await postBook(req, res);
       endpointResponse({
         code: 201,
         res,
@@ -123,4 +125,4 @@ module.exports = {
       next(httpError);
     }
   }),
-}
+};

@@ -1,5 +1,7 @@
 const routes = require('express').Router();
-const { get, getById, getByName, getByAuthor, post, put, destroy } = require('../controllers/book.controller');
+const {
+  get, getById, getByName, getByAuthor, post, put, destroy,
+} = require('../controllers/book.controller');
 
 routes.get('/', get);
 routes.get('/:id', getById);

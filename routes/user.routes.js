@@ -1,6 +1,8 @@
 const routes = require('express').Router();
 const { generateToken } = require('../helpers/token');
-const { get, getById, login, register, put, destroy } = require('../controllers/user.controller');
+const {
+  get, getById, login, register, put, destroy,
+} = require('../controllers/user.controller');
 
 routes.get('/', get);
 routes.get('/:userId', generateToken, getById);
