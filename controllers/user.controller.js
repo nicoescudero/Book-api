@@ -2,40 +2,23 @@ const createHttpError = require('http-errors');
 const { endpointResponse } = require('../helpers/success');
 const { catchAsync } = require('../helpers/catchAsync');
 const {
-  getUser, getUserById, postLogin, postRegister, putUser, deleteUser,
+  getUserById, postLogin, postRegister, putUser, deleteUser,
 } = require('../services/user.service');
 
 module.exports = {
-  get: catchAsync(async (req, res, next) => {
-    try {
-      const response = await getUser();
-      endpointResponse({
-        code: 200,
-        res,
-        message: 'Get users Succesfuly',
-        body: response,
-      });
-    } catch (error) {
-      const httpError = createHttpError(
-        error.statusCode,
-        `[Error receiving User] - [User - GET]: ${error.message}`,
-      );
-      next(httpError);
-    }
-  }),
   getById: catchAsync(async (req, res, next) => {
     try {
-      const response = await getUserById(req.params.id);
+      const response = await getUserById(req);
       endpointResponse({
         code: 200,
         res,
-        message: 'Get user Succesfuly',
+        message: 'Success getting user',
         body: response,
       });
     } catch (error) {
       const httpError = createHttpError(
         error.statusCode,
-        `[Error receiving User] - [User - GET]: ${error.message}`,
+        `[Error getting user] - [User - GET]: ${error.message}`,
       );
       next(httpError);
     }
@@ -46,13 +29,13 @@ module.exports = {
       endpointResponse({
         code: 200,
         res,
-        message: 'User logged Succesfuly',
+        message: 'User login successful',
         body: response,
       });
     } catch (error) {
       const httpError = createHttpError(
         error.statusCode,
-        `[Error login User] - [User - POST]: ${error.message}`,
+        `[Error logging user] - [User - POST]: ${error.message}`,
       );
       next(httpError);
     }
@@ -63,13 +46,13 @@ module.exports = {
       endpointResponse({
         code: 200,
         res,
-        message: 'User register Succesfuly',
+        message: 'Registered user',
         body: response,
       });
     } catch (error) {
       const httpError = createHttpError(
         error.statusCode,
-        `[Error SignUp] - [User - POST]: ${error.message}`,
+        `[Error registering user] - [User - POST]: ${error.message}`,
       );
       next(httpError);
     }
@@ -80,13 +63,13 @@ module.exports = {
       endpointResponse({
         code: 200,
         res,
-        message: 'User updated Succesfuly',
+        message: 'User updated',
         body: response,
       });
     } catch (error) {
       const httpError = createHttpError(
         error.statusCode,
-        `[Error updating User] - [User - PUT]: ${error.message}`,
+        `[Error updating user] - [User - PUT]: ${error.message}`,
       );
       next(httpError);
     }
@@ -97,13 +80,13 @@ module.exports = {
       endpointResponse({
         code: 200,
         res,
-        message: 'User deleted Succesfuly',
+        message: 'User deleted',
         body: response,
       });
     } catch (error) {
       const httpError = createHttpError(
         error.statusCode,
-        `[Error deleting User] - [User - DELETE]: ${error.message}`,
+        `[Error deleting user] - [User - DELETE]: ${error.message}`,
       );
       next(httpError);
     }

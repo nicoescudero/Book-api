@@ -1,14 +1,13 @@
 const routes = require('express').Router();
-const { generateToken } = require('../helpers/token');
+const { verifyToken } = require('../helpers/token');
 const {
-  get, getById, login, register, put, destroy,
+  getById, login, register, put, destroy,
 } = require('../controllers/user.controller');
 
-routes.get('/', get);
-routes.get('/:userId', generateToken, getById);
-routes.post('/', register);
+routes.get('/', verifyToken, getById);
+routes.post('/register', register);
 routes.post('/login', login);
-routes.put('/:userId', generateToken, put);
-routes.delete('/:userId', generateToken, destroy);
+routes.put('/', verifyToken, put);
+routes.delete('/', verifyToken, destroy);
 
 module.exports = routes;

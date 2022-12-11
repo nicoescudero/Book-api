@@ -1,44 +1,68 @@
 const bcrypt = require('bcryptjs');
+const { ErrorObject } = require('http-errors');
 const { User } = require('../database/models');
 const { generateToken } = require('../helpers/token');
 
-exports.getUser = async () => {
-  const users = await User.findAll();
-  return users;
-};
-
-exports.getUserById = async (id) => {
-  const user = await User.findOne({ where: { id } });
-  return user;
+exports.getUserById = async (req) => {
+  try {
+    const user = await User.findOne({ where: { id: req.params.userID } });
+    return user;
+  } catch (error) {
+    throw new ErrorObject(error.message, error.statusCode || 500);
+  }
 };
 
 exports.postLogin = async (req) => {
-  const user = await User.findOne({ where: { email: req.body.email } });
-  const descrypted = bcrypt.compareSync(req.body.password, user.password);
-  if (descrypted) {
-    const token = await generateToken(user);
-    return token;
+  try {
+    const user = await User.findOne({ where: { email: req.body.email } });
+    const descrypted = await bcrypt.compare(req.body.password, user.password);
+    if (descrypted) {
+      const tokn = await generateToken(user);
+      return { token: tokn };
+    }
+    throw new ErrorObject('Invalid credentials', 401);
+  } catch (error) {
+    throw new ErrorObject(error.message, error.statusCode || 500);
   }
-  return { message: 'Invalid password' };
 };
 
 exports.postRegister = async (req) => {
-  req.body.password = await bcrypt.hashSync(req.body.password, 10);
-  const user = await User.create(req.body);
-  return user;
+  try {
+    req.body.password = await bcrypt.hash(req.body.password, 10);
+    const user = await User.create({
+      name: req.body.name, email: req.body.email, password: req.body.password,
+    });
+    return user;
+  } catch (error) {
+    throw new ErrorObject(error.message, error.statusCode || 500);
+  }
 };
 
 exports.putUser = async (req) => {
-  const usuario = await User.findOne({ where: { id: req.params.userId } });
-  if (usuario) {
-    req.body.password = await bcrypt.hashSync(req.body.password, 10);
-    const user = usuario.update(req.body);
-    return user;
+  try {
+    const user = await User.findOne({ where: { id: req.params.userID } });
+    if (user) {
+      req.body.password = await bcrypt.hashSync(req.body.password, 10);
+      await user.update({
+        name: req.body.name, email: req.body.email, password: req.body.password,
+      });
+      return user;
+    }
+    throw new ErrorObject('Invalid credentials', 401);
+  } catch (error) {
+    throw new ErrorObject(error.message, error.statusCode || 500);
   }
-  return { message: 'User not found' };
 };
 
 exports.deleteUser = async (req) => {
-  const usuario = await User.findOne({ where: { id: req.params.userId } });
-  usuario.destroy();
+  try {
+    const user = await User.findOne({ where: { id: req.params.userID } });
+    if (user) {
+      await user.destroy();
+      return;
+    }
+    throw new ErrorObject('User ID Not Found', 404);
+  } catch (error) {
+    throw new ErrorObject(error.message, error.statusCode || 500);
+  }
 };
