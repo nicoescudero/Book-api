@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { ErrorObject } = require('http-errors');
 
 exports.generateToken = async (user) => {
   const data = { userID: user.id };
@@ -8,10 +9,14 @@ exports.generateToken = async (user) => {
 
 exports.verifyToken = async (req, res, next) => {
   try {
-    const token = req.headers();
-    if (await jwt.verify(token, process.env.KEY)) return next();
-    return res.status(401).json({ message: 'Invalid Token' });
+    const token = req.header('authorization').replace('Bearer ', '');
+    const response = await jwt.verify(token, process.env.KEY);
+    if (response) {
+      req.params.userID = response.userID;
+      return next();
+    }
+    throw new ErrorObject('Invalid token', 401);
   } catch (error) {
-    return res.status(401).json({ message: 'Invalid Token', error });
+    throw new ErrorObject(error.message, error.statusCode || 500);
   }
 };
