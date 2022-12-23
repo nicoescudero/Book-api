@@ -1,28 +1,34 @@
 const bcrypt = require('bcryptjs');
-const { ErrorObject } = require('http-errors');
+const createHttpError = require('http-errors');
 const { User } = require('../database/models');
 const { generateToken } = require('../helpers/token');
 
 exports.getUserById = async (req) => {
   try {
     const user = await User.findOne({ where: { id: req.params.userID } });
-    return user;
+    if (user) return { response: user };
+    return { httpError: createHttpError(404, '[Error get user] - [User - GET]: [UserId Not Found]') };
   } catch (error) {
-    throw new ErrorObject(error.message, error.statusCode || 500);
+    return {
+      httpError: createHttpError(500, `[Error get user] - [User - GET]: [Server error] ${error.message}`),
+    };
   }
 };
 
 exports.postLogin = async (req) => {
   try {
     const user = await User.findOne({ where: { email: req.body.email } });
+    if (!user) return { httpError: createHttpError(404, '[Error logging user] - [User - POST]: [User Not found]') };
     const descrypted = await bcrypt.compare(req.body.password, user.password);
     if (descrypted) {
-      const tokn = await generateToken(user);
-      return { token: tokn };
+      const response = await generateToken(user);
+      return { response };
     }
-    throw new ErrorObject('Invalid credentials', 401);
+    return { httpError: createHttpError(401, '[Error logging user] - [User - POST]: [Invalid Credentials]') };
   } catch (error) {
-    throw new ErrorObject(error.message, error.statusCode || 500);
+    return {
+      httpError: createHttpError(500, `[Error logging user] - [User - POST]: [Server error] ${error.message}`),
+    };
   }
 };
 
@@ -30,27 +36,35 @@ exports.postRegister = async (req) => {
   try {
     req.body.password = await bcrypt.hash(req.body.password, 10);
     const user = await User.create({
-      name: req.body.name, email: req.body.email, password: req.body.password,
+      name: req.body.name, email: req.body.email, password: req.body.password, roleId: 2,
     });
-    return user;
+    return { response: user };
   } catch (error) {
-    throw new ErrorObject(error.message, error.statusCode || 500);
+    return {
+      httpError: createHttpError(500, `[Error register user] - [User - POST]: [Server error] ${error.message}`),
+    };
   }
 };
 
 exports.putUser = async (req) => {
   try {
     const user = await User.findOne({ where: { id: req.params.userID } });
-    if (user) {
-      req.body.password = await bcrypt.hashSync(req.body.password, 10);
-      await user.update({
-        name: req.body.name, email: req.body.email, password: req.body.password,
-      });
-      return user;
+    if (!user) {
+      return { httpError: createHttpError(404, '[Error updating user] - [User - PUT]: [UserId Not Found]') };
     }
-    throw new ErrorObject('Invalid credentials', 401);
+    const compare = await bcrypt.compare(req.body.password, user.dataValues.password);
+    if (!compare) {
+      return { httpError: createHttpError(401, '[Error updating user] - [User - PUT]: [passwords do not match]') };
+    }
+    req.body.newPassword = await bcrypt.hashSync(req.body.newPassword, 10);
+    await user.update({
+      name: req.body.name, email: req.body.email, password: req.body.newPassword,
+    });
+    return { reponse: user };
   } catch (error) {
-    throw new ErrorObject(error.message, error.statusCode || 500);
+    return {
+      httpError: createHttpError(500, `[Error updating user] - [User - PUT]: [Server error] ${error.message}`),
+    };
   }
 };
 
@@ -59,10 +73,12 @@ exports.deleteUser = async (req) => {
     const user = await User.findOne({ where: { id: req.params.userID } });
     if (user) {
       await user.destroy();
-      return;
+      return { response: '' };
     }
-    throw new ErrorObject('User ID Not Found', 404);
+    return { httpError: createHttpError(404, '[Error deleting user] - [User - DELETE]: [UserId Not Found]') };
   } catch (error) {
-    throw new ErrorObject(error.message, error.statusCode || 500);
+    return {
+      httpError: createHttpError(500, `[Error deleting user] - [User - DELETE]: [Server error] ${error.message}`),
+    };
   }
 };
