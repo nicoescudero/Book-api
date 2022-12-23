@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
-const { ErrorObject } = require('http-errors');
+const createHttpError = require('http-errors');
 
 exports.generateToken = async (user) => {
-  const data = { userID: user.id };
+  const data = { userID: user.id, roleId: user.roleId };
   const token = await jwt.sign(data, process.env.KEY, { expiresIn: 60 * 60 });
   return token;
 };
@@ -13,10 +13,11 @@ exports.verifyToken = async (req, res, next) => {
     const response = await jwt.verify(token, process.env.KEY);
     if (response) {
       req.params.userID = response.userID;
+      req.params.roleId = response.roleId;
       return next();
     }
-    throw new ErrorObject('Invalid token', 401);
+    return next(createHttpError(401, 'Invalid token'));
   } catch (error) {
-    throw new ErrorObject(error.message, error.statusCode || 500);
+    return next(createHttpError(401, 'Missing token'));
   }
 };
