@@ -14,20 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   UserBooks.init({
-    UserId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-    BookId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: Book,
-        key: 'id',
-      },
-    },
+    UserId: DataTypes.INTEGER,
+    BookId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'UserBooks',
