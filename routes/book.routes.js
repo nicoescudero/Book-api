@@ -1,14 +1,17 @@
 const routes = require('express').Router();
+const { isAdmin } = require('../middlewares/roleValidator');
+const { validateSchema } = require('../middlewares/validator');
+const { bookSchema } = require('../schemas/book.schema');
 const {
-  get, getById, getByName, getByAuthor, post, put, destroy,
+  get, getById, getByTitle, getByAuthor, post, put, destroy,
 } = require('../controllers/book.controller');
 
-routes.get('/', get);
+routes.get('/', isAdmin, get);
 routes.get('/:id', getById);
-routes.get('/name/:name', getByName);
+routes.get('/title/:title', getByTitle);
 routes.get('/author/:author', getByAuthor);
-routes.post('/', post);
-routes.put('/:id', put);
-routes.delete('/:id', destroy);
+routes.post('/', isAdmin, validateSchema(bookSchema), post);
+routes.put('/:id', isAdmin, validateSchema(bookSchema), put);
+routes.delete('/:id', isAdmin, destroy);
 
 module.exports = routes;

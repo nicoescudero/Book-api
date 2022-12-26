@@ -1,66 +1,127 @@
+const createHttpError = require('http-errors');
 const { Book } = require('../database/models');
 
-exports.getBooks = async (res) => {
+exports.getBooks = async () => {
   try {
     const books = await Book.findAll();
-    return books;
+    if (books) return { response: books };
+    return {
+      httpError: createHttpError(404, '[Error getting Books] - [Book - GET]: [Books Not Found]'),
+    };
   } catch (error) {
-    return res.status(500);
+    return {
+      httpError: createHttpError(500, `[Error getting Books] - [Book - GET]: [Server error] ${error.message}`),
+    };
   }
 };
 
-exports.getBookById = async (id, res) => {
+exports.getBookById = async (req) => {
   try {
-    const book = await Book.findOne({ where: { id } });
-    return book;
+    const book = await Book.findOne({ where: { id: req.params.id } });
+    if (!book) {
+      return {
+        httpError: createHttpError(404, '[Error getting Book] - [Book - GET]: [BookId Not Found]'),
+      };
+    }
+    return { response: book.dataValues };
   } catch (error) {
-    return res.status(404).json({ message: 'Book not found' });
+    return {
+      httpError: createHttpError(500, `[Error getting Book] - [Book - GET]: [Server error] ${error.message}`),
+    };
   }
 };
 
-exports.getBookByName = async (name, res) => {
+exports.getBookByTitle = async (req) => {
   try {
-    const book = await Book.findOne({ where: { name } });
-    return book;
+    const book = await Book.findOne({ where: { title: req.params.title } });
+    if (!book) {
+      return {
+        httpError: createHttpError(404, '[Error getting Book] - [Book - GET]: [Title Not Found]'),
+      };
+    }
+    return { response: book.dataValues };
   } catch (error) {
-    return res.status(404).json({ message: 'Book not found' });
+    return {
+      httpError: createHttpError(500, `[Error getting Book] - [Book - GET]: [Server error] ${error.message}`),
+    };
   }
 };
 
-exports.getBookByAuthor = async (author, res) => {
+exports.getBookByAuthor = async (req) => {
   try {
-    const books = await Book.findAll({ where: { author } });
-    return books;
+    const books = await Book.findAll({ where: { author: req.params.author } });
+    if (books.length === 0) {
+      return {
+        httpError: createHttpError(404, '[Error getting Books] - [Book - GET]: [Author Not Found]'),
+      };
+    }
+    return { response: books };
   } catch (error) {
-    return res.status(404).json({ message: 'Not found author' });
+    return {
+      httpError: createHttpError(500, `[Error getting Books] - [Book - GET]: [Server error] ${error.message}`),
+    };
   }
 };
 
-exports.postBook = async (req, res) => {
+exports.postBook = async (req) => {
   try {
-    const { name, author } = req.body;
-    const book = await Book.create({ name, author });
-    return book;
+    const foundBook = await Book.findOne({ where: { title: req.body.title } });
+    if (foundBook) {
+      return {
+        httpError: createHttpError(409, '[Error creating Book] - [Book - POST]: [This title already exists]'),
+      };
+    }
+    const book = await Book.create({
+      title: req.body.title,
+      author: req.body.author,
+      description: req.body.description,
+      chapters: req.body.chapters,
+      editorial: req.body.editorial,
+      year: req.body.year,
+    });
+    return { response: book };
   } catch (error) {
-    return res.status(400);
+    return {
+      httpError: createHttpError(500, `[Error creating Book] - [Book - POST]: [Server error] ${error.message}`),
+    };
   }
 };
 
-exports.putBook = async (req, res) => {
+exports.putBook = async (req) => {
   try {
-    const { name, author } = req.body;
-    const book = await Book.update({ name, author }, { where: { id: req.params.id } });
-    return book;
+    const book = await Book.findOne({ where: { id: req.params.id } });
+    if (!book) {
+      return {
+        httpError: createHttpError(404, '[Error updating Book] - [Book - PUT]: [BookId Not Found]'),
+      };
+    }
+    await book.update({
+      title: req.body.title,
+      author: req.body.author,
+      description: req.body.description,
+      chapters: req.body.chapters,
+      editorial: req.body.editorial,
+      year: req.body.year,
+    });
+    return { response: book };
   } catch (error) {
-    return res.status(404).json({ message: 'Book not found' });
+    return {
+      httpError: createHttpError(500, `[Error updating Book] - [Book - PUT]: [Server error] ${error.message}`),
+    };
   }
 };
 
-exports.deleteBook = async (id, res) => {
+exports.deleteBook = async (id) => {
   try {
-    await Book.destroy({ where: { id } });
-    return res.status(204);
+    if (await Book.destroy({ where: { id } })) {
+      return { response: '' };
+    }
+    return {
+      httpError: createHttpError(404, '[Error deleting Book] - [Book - DELETE]: [BookId Not Found]'),
+    };
   } catch (error) {
-    return res.status(404).json({ message: 'Book not found' });
+    return {
+      httpError: createHttpError(500, `[Error deleting Book] - [Book - DELETE]: [Server error] ${error.message}`),
+    };
   }
 };

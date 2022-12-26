@@ -9,11 +9,23 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
+      title: {
         type: Sequelize.STRING
       },
       author: {
         type: Sequelize.STRING
+      },
+      description: {
+        type: Sequelize.STRING
+      },
+      chapters: {
+        type: Sequelize.INTEGER
+      },
+      editorial: {
+        type: Sequelize.STRING
+      },
+      year: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
