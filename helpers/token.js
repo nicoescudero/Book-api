@@ -13,6 +13,7 @@ exports.verifyToken = async (req, res, next) => {
     const response = await jwt.verify(token, process.env.KEY);
     if (response) {
       req.params.userID = response.userID;
+      req.userID = response.userID;
       req.roleId = response.roleId;
       return next();
     }
