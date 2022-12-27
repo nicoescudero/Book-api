@@ -7,7 +7,7 @@ require('dotenv').config();
 
 app.use(morgan('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 // routes
 app.use('/', require('./routes/index.routes'));
 
