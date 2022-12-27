@@ -12,6 +12,8 @@ routes.use('/book', verifyToken, require('./book.routes'));
 
 routes.use('/user', require('./user.routes'));
 
+routes.use('/match', verifyToken, require('./userbooks.routes'));
+
 routes.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 module.exports = routes;
