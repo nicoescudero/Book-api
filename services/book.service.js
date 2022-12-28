@@ -1,13 +1,41 @@
 const createHttpError = require('http-errors');
 const { Book } = require('../database/models');
 
-exports.getBooks = async () => {
+exports.getBooks = async (req) => {
   try {
-    const books = await Book.findAll();
-    if (books) return { response: books };
-    return {
-      httpError: createHttpError(404, '[Error getting Books] - [Book - GET]: [Books Not Found]'),
+    const getUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
+    const page = Number.parseInt(req.query.page, 10) || 1;
+    const info = { next: null, prev: null };
+    const limit = 10;
+    const offset = page > 0 ? (page - 1) * limit : 0;
+
+    if (page) {
+      if (page > 1) {
+        info.prev = `${getUrl}?page=${Number(page) - 1}`;
+        info.next = `${getUrl}?page=${Number(page) + 1}`;
+      } else {
+        info.prev = null;
+        info.next = `${getUrl}?page=${Number(page) + 1}`;
+      }
+    } else {
+      info.prev = null;
+      info.next = `${getUrl}?page=2`;
+    }
+    const { count, rows: books } = await Book.findAndCountAll({ offset, limit });
+    const totalPages = Math.ceil(count / limit);
+    if (totalPages < page || page === 0) {
+      return {
+        httpError: createHttpError(404, '[Error getting Books] - [Book - GET]: [Books Not Found]'),
+      };
+    }
+    const allBooks = {
+      prev: info.prev,
+      next: `${totalPages > page ? info.next : null}`,
+      currentPage: page,
+      totalPages,
+      books,
     };
+    return { response: allBooks };
   } catch (error) {
     return {
       httpError: createHttpError(500, `[Error getting Books] - [Book - GET]: [Server error] ${error.message}`),
@@ -49,13 +77,43 @@ exports.getBookByTitle = async (req) => {
 
 exports.getBookByAuthor = async (req) => {
   try {
-    const books = await Book.findAll({ where: { author: req.params.author } });
-    if (books.length === 0) {
+    const getUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
+    const page = Number.parseInt(req.query.page, 10) || 1;
+    const info = { next: null, prev: null };
+    const limit = 10;
+    const offset = page > 0 ? (page - 1) * limit : 0;
+
+    if (page) {
+      if (page > 1) {
+        info.prev = `${getUrl}?page=${Number(page) - 1}`;
+        info.next = `${getUrl}?page=${Number(page) + 1}`;
+      } else {
+        info.prev = null;
+        info.next = `${getUrl}?page=${Number(page) + 1}`;
+      }
+    } else {
+      info.prev = null;
+      info.next = `${getUrl}?page=2`;
+    }
+    const { count, rows: books } = await Book.findAndCountAll({
+      where: { author: req.params.author },
+      offset,
+      limit,
+    });
+    const totalPages = Math.ceil(count / limit);
+    if (totalPages < page || page === 0) {
       return {
         httpError: createHttpError(404, '[Error getting Books] - [Book - GET]: [Author Not Found]'),
       };
     }
-    return { response: books };
+    const allBooks = {
+      prev: info.prev,
+      next: `${totalPages > page ? info.next : null}`,
+      currentPage: page,
+      totalPages,
+      books,
+    };
+    return { response: allBooks };
   } catch (error) {
     return {
       httpError: createHttpError(500, `[Error getting Books] - [Book - GET]: [Server error] ${error.message}`),
@@ -93,6 +151,13 @@ exports.putBook = async (req) => {
     if (!book) {
       return {
         httpError: createHttpError(404, '[Error updating Book] - [Book - PUT]: [BookId Not Found]'),
+      };
+    }
+    const titlesFound = await Book.findAll({ where: { title: req.body.title } });
+    const titleExist = await titlesFound.filter((e) => e.id !== book.id);
+    if (titleExist.length > 0) {
+      return {
+        httpError: createHttpError(409, '[Error updating Book] - [Book - PUT]: [This title already exists]'),
       };
     }
     await book.update({

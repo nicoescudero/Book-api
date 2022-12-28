@@ -8,7 +8,7 @@ const {
 module.exports = {
   get: catchAsync(async (req, res, next) => {
     try {
-      const { response, httpError } = await getBooks();
+      const { response, httpError } = await getBooks(req);
       if (!httpError) {
         endpointResponse({
           code: 200,
