@@ -1,18 +1,21 @@
 exports.postSchema = {
-  BookId: {
+  bookId: {
+    in: ['params', 'query'],
     isInt: {
       if: (value) => value !== '',
-      errorMessage: 'BookId must be number',
+      errorMessage: 'bookId must be number',
     },
+    toInt: true,
     notEmpty: {
       bail: true,
-      errorMessage: 'BookId must not be empty',
+      errorMessage: 'bookId must not be empty',
     },
   },
 };
 
 exports.deleteSchema = {
   matchId: {
+    in: ['params', 'query'],
     isInt: {
       if: (value) => value !== '',
       errorMessage: 'matchId must be number',
