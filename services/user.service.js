@@ -5,7 +5,7 @@ const { generateToken } = require('../helpers/token');
 
 exports.getUserById = async (req) => {
   try {
-    const user = await User.findOne({ where: { id: req.params.userID } });
+    const user = await User.findOne({ where: { id: req.userID } });
     if (user) return { response: user };
     return { httpError: createHttpError(404, '[Error get user] - [User - GET]: [UserId Not Found]') };
   } catch (error) {
@@ -34,6 +34,10 @@ exports.postLogin = async (req) => {
 
 exports.postRegister = async (req) => {
   try {
+    const userFound = await User.findOne({ where: { email: req.body.email } });
+    if (userFound) {
+      return { httpError: createHttpError(409, '[Error register User] - [User - POST]: [This email already exists]') };
+    }
     req.body.password = await bcrypt.hash(req.body.password, 10);
     const user = await User.create({
       name: req.body.name, email: req.body.email, password: req.body.password, roleId: 2,
@@ -48,9 +52,14 @@ exports.postRegister = async (req) => {
 
 exports.putUser = async (req) => {
   try {
-    const user = await User.findOne({ where: { id: req.params.userID } });
+    const user = await User.findOne({ where: { id: req.userID } });
     if (!user) {
       return { httpError: createHttpError(404, '[Error updating user] - [User - PUT]: [UserId Not Found]') };
+    }
+    const emailsFound = await User.findAll({ where: { email: req.body.email } });
+    const emailExist = await emailsFound.filter((item) => item.id !== req.userID);
+    if (emailExist.length > 0) {
+      return { httpError: createHttpError(409, '[Error updating User] - [User - PUT]: [This email already exists]') };
     }
     const compare = await bcrypt.compare(req.body.password, user.dataValues.password);
     if (!compare) {
@@ -70,7 +79,7 @@ exports.putUser = async (req) => {
 
 exports.deleteUser = async (req) => {
   try {
-    const user = await User.findOne({ where: { id: req.params.userID } });
+    const user = await User.findOne({ where: { id: req.userID } });
     if (user) {
       await user.destroy();
       return { response: '' };
