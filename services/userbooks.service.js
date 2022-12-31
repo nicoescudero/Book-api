@@ -24,6 +24,7 @@ exports.getAllMatchs = async (req) => {
 
     const { count, rows: matchs } = await UserBooks.findAndCountAll({
       where: { UserId: req.userID },
+      attributes: ['id', 'BookId', 'createdAt', 'updatedAt'],
       offset,
       limit,
     });
@@ -43,13 +44,20 @@ exports.getAllMatchs = async (req) => {
     return { response: allMatchs };
   } catch (error) {
     return {
-      httpError: createHttpError(500, `[Error getting matchs] - [UserBooks- GET]: ${error.message}`),
+      httpError: createHttpError(500, `[Error getting matchs] - [UserBooks - GET]: ${error.message}`),
     };
   }
 };
 
 exports.createMatch = async (req) => {
   try {
+    const matchs = await UserBooks.findAll({ where: { UserId: req.userID } });
+    const matchFound = await matchs.filter((e) => e.BookId === req.params.bookId);
+    if (matchFound.length > 0) {
+      return {
+        httpError: createHttpError(409, '[Book match Error] - [UserBooks - POST]: [there is already a "match" for this book]'),
+      };
+    }
     const match = await UserBooks.create({ UserId: req.userID, BookId: req.params.bookId });
     return { response: match };
   } catch (error) {
@@ -64,7 +72,7 @@ exports.deleteMatch = async (req) => {
     const match = await UserBooks.findOne({ where: { id: req.params.matchId } });
     if (!match) {
       return {
-        httpError: createHttpError(404, '[Error deleting match] - [UserBooks- DELETE]: [Match Not Found]'),
+        httpError: createHttpError(404, '[Error deleting match] - [UserBooks - DELETE]: [Match Not Found]'),
       };
     }
     if (match.UserId === req.userID) {
@@ -72,11 +80,11 @@ exports.deleteMatch = async (req) => {
       return { response: '' };
     }
     return {
-      httpError: createHttpError(404, '[Error deleting match] - [UserBooks- DELETE]: [Match Not Found]'),
+      httpError: createHttpError(404, '[Error deleting match] - [UserBooks - DELETE]: [Match Not Found]'),
     };
   } catch (error) {
     return {
-      httpError: createHttpError(500, `[Error deleting match] - [UserBooks- DELETE]: ${error.message}`),
+      httpError: createHttpError(500, `[Error deleting match] - [UserBooks - DELETE]: ${error.message}`),
     };
   }
 };
