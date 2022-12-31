@@ -20,13 +20,6 @@ module.exports = {
       },
       roleId: {
         type: Sequelize.INTEGER,
-        references:{
-          model:'Roles',
-          key:'id'
-        },
-        onUpdate:'cascade',
-        onDelete:'cascade',
-        allowNull: false,
       },
       createdAt: {
         allowNull: false,

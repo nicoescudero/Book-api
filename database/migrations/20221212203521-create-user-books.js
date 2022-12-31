@@ -11,23 +11,9 @@ module.exports = {
       },
       UserId: {
         type: Sequelize.INTEGER,
-        references:{
-          model:'Users',
-          key:'id'
-        },
-        onUpdate:'cascade',
-        onDelete:'cascade',
-        allowNull: false,
       },
       BookId: {
         type: Sequelize.INTEGER,
-        references:{
-          model:'Books',
-          key:'id'
-        },
-        onUpdate:'cascade',
-        onDelete:'cascade',
-        allowNull: false,
       },
       createdAt: {
         allowNull: false,
